@@ -2,7 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS = credentials('dockerhub')
+        DOCKER_IMAGE = 'brandonj090823/docker-node-app' // <--- your Docker Hub repo
+        IMAGE_TAG = 'latest'
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // <--- this is what you named your Jenkins Docker credentials
     }
 
     stages {
@@ -14,18 +16,30 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t brandonj090823/docker-node-app .'
+                script {
+                    docker.build("${DOCKER_IMAGE}:${IMAGE_TAG}")
+                }
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                sh '''
-                    echo "$DOCKER_CREDENTIALS_PSW" | docker login -u "$DOCKER_CREDENTIALS_USR" --password-stdin
-                    docker push brandonj090823/docker-node-app
-                    docker logout
-                '''
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKERHUB_CREDENTIALS}") {
+                        docker.image("${DOCKER_IMAGE}:${IMAGE_TAG}").push()
+                        docker.image("${DOCKER_IMAGE}:${IMAGE_TAG}").push('latest')
+                    }
+                }
             }
+        }
+    }
+
+    post {
+        success {
+            echo "Docker image ${DOCKER_IMAGE}:${IMAGE_TAG} pushed successfully!"
+        }
+        failure {
+            echo "Pipeline failed."
         }
     }
 }
