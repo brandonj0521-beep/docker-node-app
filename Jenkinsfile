@@ -7,11 +7,11 @@ pipeline {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') // <--- this is what you named your Jenkins Docker credentials
     }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/brandonj0521-beep/docker-node-app.git'
-            }
+   stage('Checkout') {
+    steps {
+        git branch: 'main', url: 'https://github.com/brandonj0521-beep/docker-node-app.git'
+    }
+}
         }
 
         stage('Build Docker Image') {
