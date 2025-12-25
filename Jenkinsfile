@@ -2,16 +2,16 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'brandonj090823/docker-node-app' // <--- your Docker Hub repo
+        DOCKER_IMAGE = 'brandonj090823/docker-node-app'  // your Docker Hub repo
         IMAGE_TAG = 'latest'
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // <--- this is what you named your Jenkins Docker credentials
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // Jenkins DockerHub credentials ID
     }
 
-   stage('Checkout') {
-    steps {
-        git branch: 'main', url: 'https://github.com/brandonj0521-beep/docker-node-app.git'
-    }
-}
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/brandonj0521-beep/docker-node-app.git'
+            }
         }
 
         stage('Build Docker Image') {
