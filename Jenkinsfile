@@ -2,8 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_USERNAME = credentials('dockerhub')
-        DOCKER_PASSWORD = credentials('dockerhub')
+        DOCKER_CREDENTIALS = credentials('dockerhub')
     }
 
     stages {
@@ -21,9 +20,11 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
-                sh 'docker push brandonj090823/docker-node-app'
-                sh 'docker logout'
+                sh '''
+                    echo "$DOCKER_CREDENTIALS_PSW" | docker login -u "$DOCKER_CREDENTIALS_USR" --password-stdin
+                    docker push brandonj090823/docker-node-app
+                    docker logout
+                '''
             }
         }
     }
